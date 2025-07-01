@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logements Étudiants à Maurice</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f0f4f8 0%, #d6e4f0 100%);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 20px;
+            background: linear-gradient(to right, #2c3e50, #4a6491);
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+        }
+        
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .filter-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .filter-group select, 
+        .filter-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            background: #f9f9f9;
+        }
+        
+        .campuses {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .campus-card {
+            flex: 1;
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .campus-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .campus-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+        
+        .campus-card p {
+            font-size: 1.1rem;
+            color: #555;
+            margin-bottom: 15px;
+        }
+        
+        .campus-card .count {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #3498db;
+        }
+        
+        .campus-card.rosehill {
+            border-top: 5px solid #e74c3c;
+        }
+        
+        .campus-card.pamplemousses {
+            border-top: 5px solid #2ecc71;
+        }
+        
+        .tabs {
+            display: flex;
+            background: white;
+            border-radius: 8px 8px 0 0;
+            overflow: hidden;
+            margin-bottom: -1px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .tab {
+            padding: 15px 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab.active {
+            background: #f8f9fa;
+            border-bottom: 3px solid #3498db;
+            color: #3498db;
+        }
+        
+        .tab:hover:not(.active) {
+            background: #f0f0f0;
+        }
+        
+        .table-container {
+            background: white;
+            border-radius: 0 0 8px 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+            max-height: 600px;
+            overflow-y: auto;
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1200px;
+        }
+        
+        th {
+            background: #2c3e50;
+            color: white;
+            text-align: left;
+            padding: 15px 20px;
+            position: sticky;
+            top: 0;
+        }
+        
+        td {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            vertical-align: top;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        tr:hover {
+            background-color: #e3f2fd;
+        }
+        
+        .map-link {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.3s;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        
+        .map-link:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .currency {
+            font-weight: 600;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        
+        .currency.mur {
+            color: #c0392b;
+        }
+        
+        .currency.mga {
+            color: #16a085;
+        }
+        
+        .currency.fmg {
+            color: #8e44ad;
+        }
+        
+        .currency.eur {
+            color: #27ae60;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-top: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
+        
+        .mobile-table-info {
+            display: none;
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 1200px) {
+            .table-container {
+                overflow-x: auto;
+            }
+            
+            table {
+                min-width: 1000px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .campuses {
+                flex-direction: column;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            th, td {
+                padding: 12px 10px;
+                font-size: 14px;
+            }
+            
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            .mobile-table-info {
+                display: block;
+            }
+            
+            .campus-card {
+                padding: 20px;
+            }
+            
+            .campus-card h3 {
+                font-size: 1.5rem;
+            }
+            
+            .campus-card .count {
+                font-size: 2.5rem;
+            }
+            
+            .tab {
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+            
+            header {
+                padding: 20px 15px;
+            }
+            
+            header h1 {
+                font-size: 1.8rem;
+            }
+            
+            header p {
+                font-size: 1rem;
+            }
+            
+            .controls {
+                padding: 15px;
+            }
+            
+            .filter-group {
+                min-width: 100%;
+            }
+            
+            .campus-card {
+                padding: 15px;
+            }
+            
+            .campus-card h3 {
+                font-size: 1.3rem;
+            }
+            
+            .campus-card .count {
+                font-size: 2rem;
+            }
+            
+            .tab {
+                padding: 10px 15px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-home"></i> Logements Étudiants à Maurice</h1>
+            <p>Trouvez votre logement idéal près des campus universitaires</p>
+        </header>
+        
+        <div class="controls> 
+            <div class="filter-group">
+                <label for="search"><i class="fas fa-search"></i> Recherche</label>
+                <input type="text" id="search" placeholder="Recherche par nom ou lieu...">
+            </div>
+        </div>
+        
+        <div class="campuses">
+            <div class="campus-card rosehill">
+                <h3>Campus Rose Hill</h3>
+                <p>Logements disponibles</p>
+                <div class="count">38</div>
+            </div>
+            
+            <div class="campus-card pamplemousses">
+                <h3>Campus Pamplemousses</h3>
+                <p>Logements disponibles</p>
+                <div class="count">19</div>
+            </div>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="rosehill">Campus Rose Hill</div>
+            <div class="tab" data-tab="pamplemousses">Campus Pamplemousses</div>
+        </div>
+        
+        <div class="mobile-table-info">
+            <i class="fas fa-info-circle"></i> Sur les écrans mobiles, faites défiler horizontalement pour voir toutes les colonnes du tableau.
+        </div>
+        
+        <div class="table-container">
+            <table id="accommodation-table">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Propriétaire</th>
+                        <th>Adresse</th>
+                        <th>Chambres</th>
+                        <th>Contact</th>
+                        <th>Prix (MUR)</th>
+                        <th>Prix (MGA)</th>
+                        <th>Prix (FMG)</th>
+                        <th>Prix (EUR)</th>
+                        <th>Visualiser</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <!-- Les données seront insérées ici par JavaScript -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="footer">
+            <p>Note: Les taux de conversion utilisés sont approximatifs (1 MUR = 100 MGA = 500 FMG = 0.020 EUR)</p>
+            <p>Dashboard des logements étudiants - © 2025         </div>
+    </div>
+
+    <script>
+        // Taux de conversion (approximatifs)
+        const CONVERSION_RATES = {
+            MGA: 100,    // 1 MUR = 100 MGA (Ariary)
+            FMG: 500,    // 1 MUR = 500 FMG (Franc Malgache)
+            EUR: 0.020   // 1 MUR = 0.020 EUR
+        };
+
+        // Fonction pour formater les nombres
+        function formatNumber(num) {
+            return new Intl.NumberFormat('fr-FR').format(Math.round(num));
+        }
+
+        // Fonction pour extraire le prix numérique d'une chaîne
+        function extractPrice(priceStr) {
+            if (!priceStr) return null;
+            
+            // Recherche des nombres dans la chaîne
+            const match = priceStr.match(/\d[\d,.\s]*/);
+            if (match) {
+                // Nettoyage du nombre
+                const numStr = match[0].replace(/\s/g, '').replace(/,/g, '').replace(/\./g, '');
+                const price = parseFloat(numStr);
+                
+                if (!isNaN(price)) {
+                    return price;
+                }
+            }
+            return null;
+        }
+
+        // Fonction pour générer le lien Google Maps
+        function generateMapLink(address) {
+            if (!address) return '';
+            const encodedAddress = encodeURIComponent(address + ', Maurice');
+            return `<a href="https://www.google.com/maps/search/?api=1&query=${encodedAddress}" 
+                      target="_blank" class="map-link">
+                      <i class="fas fa-map-marked-alt"></i> Carte
+                   </a>`;
+        }
+
+        // Données complètes des logements
+        const accommodations = {
+            rosehill: [
+                { id: 1, name: "Mrs Armoogum", address: "Camp Levieux/Quatre Bornes/Rose Hill", rooms: "5", contact: "5933-9695/5254-1288", price: "7000 par chambres" },
+                { id: 2, name: "Mahesh Poligadoo", address: "Candos/Quatre Bornes", rooms: "", contact: "427 0168/57735524", price: "" },
+                { id: 3, name: "Christine Mootooveeren", address: "Royal Road, Eau-Coulee", rooms: "", contact: "57397024", price: "" },
+                { id: 4, name: "Ramsaran Nundalalee", address: "", rooms: "", contact: "57564022/2176739", price: "" },
+                { id: 5, name: "Mme Takoor", address: "", rooms: "", contact: "52536601/52595897/4645892", price: "" },
+                { id: 6, name: "Mr Bernard Savuthian", address: "Camp Levieux", rooms: "", contact: "59346695/59400507", price: "" },
+                { id: 7, name: "Monsieur Noor Golamhossen / Mlle Neisha", address: "", rooms: "", contact: "57646603", price: "" },
+                { id: 8, name: "M. Doobaree", address: "La Marie", rooms: "", contact: "52516380", price: "" },
+                { id: 9, name: "M. Muruguppa", address: "63, Avenue Toureau, Stanley, Rose Hill", rooms: "3", contact: "59494653/57502409/4672493", price: "3500 par chambre" },
+                { id: 10, name: "Eliette Marianne/Alexandre Marianne", address: "Rue Dr Ferriere, Plaisance, Rose-hill", rooms: "", contact: "57833155/57602096", price: "" },
+                { id: 11, name: "Miss Deerika Dookun", address: "Royal Rd, Bonne Terre, Vacoas", rooms: "", contact: "57610768/59099012/4258644", price: "" },
+                { id: 12, name: "Soobas Andhin", address: "", rooms: "", contact: "4642475", price: "" },
+                { id: 13, name: "Rajcoomar Seenauth", address: "32 Dr.S.Piarroux Street, Camp Levieux", rooms: "", contact: "57030962/57339979", price: "" },
+                { id: 14, name: "Dagah Shikha", address: "St Paul, Phoenix", rooms: "", contact: "57099091", price: "" },
+                { id: 15, name: "Sarojini Sungbahadoor", address: "", rooms: "", contact: "", price: "" },
+                { id: 16, name: "Ackbar Soopun", address: "43, Avenue Bois Noire, Plaissance, Rose Hill", rooms: "", contact: "57955689/57862782/57447017/4651365", price: "6500 include all bills" },
+                { id: 17, name: "Pyndiah Shirley", address: "No 24 Colonel Draper Street, Beau-Bassin", rooms: "", contact: "5256 7551", price: "" },
+                { id: 18, name: "Nasser Moosafur", address: "Avenue des Tulipes, St Jean, Quatre Bornes", rooms: "", contact: "52530059/4895050", price: "" },
+                { id: 19, name: "Yasmine CHADY", address: "Camp Levieux", rooms: "", contact: "+230 57269758/+230 52589797", price: "" },
+                { id: 20, name: "Girish Nuckchady", address: "136 Bis Hugnin Street, Rose-Hill", rooms: "2 sur 4", contact: "23052508284 (WhatsApp)/57524048; 230 4273876 (home)", price: "5500 (single), 7000 (double)" },
+                { id: 21, name: "Chady Rafick", address: "21 Broad Avenue, Quatre Bornes", rooms: "4", contact: "57044444", price: "4100.00" },
+                { id: 22, name: "Blaise Brenier", address: "", rooms: "", contact: "", price: "", fb: "https://m.facebook.com/groups/403270590513974?ref=share" },
+                { id: 23, name: "Devadass Nursimulu", address: "School Road, L'Avenir, Saint Pierre", rooms: "2 bed rooms, 2 common rooms + Terrace", contact: "230-57773701", price: "4000 per student" },
+                { id: 24, name: "Gourdeale tk", address: "Dumas Street, Beau Bassin", rooms: "4", contact: "52534669", price: "Rent:7000; Utilities:1000" },
+                { id: 25, name: "Doobaree Suren", address: "15 Cyprus Lane, La Marie Vacoas", rooms: "3", contact: "57084517", price: "big room (Rs.12000); small room(Rs.7000)" },
+                { id: 26, name: "Reza Emambocus", address: "Residence La Concorde", rooms: "", contact: "52589797", price: "" },
+                { id: 27, name: "Mrs Kamini Dookun", address: "Royal Road, Bonne Terre, Vacoas", rooms: "8", contact: "59161010/59473512", price: "single room: Rs 4300; double room Rs 5500" },
+                { id: 28, name: "Krit Unmole", address: "Clairfonds No.2, Avenue Brown Sequard, Vacoas", rooms: "4", contact: "+230 52587828", price: "" },
+                { id: 29, name: "Mr. Goolamhossen", address: "Avenue Berthaud, Stanley, Rose Hill", rooms: "", contact: "5 423 4771", price: "" },
+                { id: 30, name: "Rassou Jean Marie Paul", address: "Apt N 12 la concorde camp le vieux.opp:primary school", rooms: "", contact: "Tel:4662917; Mob:57505244", price: "" },
+                { id: 31, name: "Gengan Veeren", address: "88A Avenue Neon Morc, Nouvelle-Ville, Roche-Brunes, Rose-Hill", rooms: "", contact: "5768 1870/5 252 5309", price: "" },
+                { id: 32, name: "Mamatha", address: "Landmark City Hotel, 2nd, 3rd & 4th Floor, St Jean Road, Quatre Bornes", rooms: "", contact: "tel No:6731687; What Up No: 59269117", price: "19 Single Room: Rs.9000; 11 Double Room: Rs.12,000" },
+                { id: 33, name: "Kumara Apavoo", address: "Jackson Lane, Quatre-Bornes", rooms: "", contact: "230 5421 6276; 230 601 1839; +230 698 1767", price: "3500 (monthly) per room" },
+                { id: 34, name: "Jenny Brochard", address: "25 verger bissamar mont roches", rooms: "Studio", contact: "57950179", price: "" },
+                { id: 35, name: "N Seerutun", address: "Collins Avenue, Roches Brunes", rooms: "3", contact: "57630115", price: "6800 per room per month" },
+                { id: 36, name: "Sanjay Badal", address: "34, Avenue Beau Sejour Belle Rose, Quatre Bornes", rooms: "", contact: "+230 57843225", price: "" },
+                { id: 37, name: "Melanie Regnaud", address: "29, Avenue Drapers, Quatre Bornes", rooms: "", contact: "+230 57704201", price: "" },
+                { id: 38, name: "Mr Jocelyn", address: "Camp Levieux", rooms: "", contact: "54930497", price: "" },
+                { id: 39, name: "Manoj Gokool", address: "222 Engrais martial lamairee eau Coulee curepipe road", rooms: "", contact: "57777577", price: "" },
+                { id: 40, name: "Jeenee Ruby Seevathean", address: "R. Seeneevassen Avenue, Quatre Bornes", rooms: "", contact: "5769 4077 (Whatsapp)+59354266", price: "" },
+                { id: 41, name: "Jennifer Sauleek", address: "Camp Levieux", rooms: "", contact: "57277502/58077237", price: "" },
+                { id: 42, name: "Mrs Vythilingum Yelandamanee Soupamah", address: "Impasse Chateua Neuf Trefles, Rose Hill", rooms: "", contact: "58558898/57766303/4652213", price: "" },
+                { id: 43, name: "Balloo Ambedkar", address: "Mont Roches, Beau Bassin", rooms:"", contact: "59399542", email: "yansmusic@outlook.com", price: "" },
+                { id: 44, name: "Ramesh Mungroo", address: "st geran lane Avenue Cassidy rosehill", rooms: "", contact: "5775 6904", email: "r.mungroo13@gmail.com", price: "" },
+                { id: 45, name: "Radhika Luchoomun-Gungaram", address: "Avenue John Kennedy VACOAS", rooms: "", contact: "57750952", email: "radhikajyk@yahoo.com", price: "" }
+            ],
+            pamplemousses: [
+                { id: 1, name: "M. Dowlut", address: "Trou Aux Biches", rooms: "", contact: "57336918", email: "bddowlut@gmail.com", price: "" },
+                { id: 2, name: "Mr Nandu Arvind", address: "Mongout", rooms: "", contact: "57788838", email: "", price: "" },
+                { id: 3, name: "Bala", address: "Grand Bay", rooms: "", contact: "59074558", email: "iramanara@gmail.com", price: "" },
+                { id: 4, name: "Mr Bandhu", address: "Pamplemousses", rooms: "", contact: "57986499", email: "ybandhu@hotmail.com", price: "" },
+                { id: 5, name: "Mrs Kathleen", address: "62; Residence Les Flamants, Pereybere", rooms: "", contact: "59201899", email: "kathleen.lck@gmail.com", price: "" },
+                { id: 6, name: "Simi Boodoo", address: "Ramgoolam Road, Plaine des Papayes", rooms: "", contact: "57635929", email: "simiboodoo96@gmail.com", price: "" },
+                { id: 7, name: "Madame Nohur Dilshad", address: "Terre Rouge", rooms: "", contact: "", email: "dilshad_nohur@hotmail.fr", price: "" },
+                { id: 8, name: "Lovenah Ramchurn", address: "Triolet", rooms: "", contact: "58125186", email: "ramchurn.lovenah@orange.com/ramchurnlovenah@gmail.com", price: "" },
+                { id: 9, name: "D Nursimulu", address: "Saint Pierre (L'Avenir) - Bus to Rose Hill available every 10-15 minutes", rooms: "", contact: "57773701", email: "devnursimulu@gmail.com", price: "" },
+                { id: 10, name: "Sanjaye Ramchurn", address: "S Indira Gandhi Road, 8th Mile Triolet", rooms: "4", contact: "57962295", email: "ramchurnlovenah@gmail.com", price: "Rs 4000 / per student" },
+                { id: 11, name: "Blaise Brenier", address: "", rooms: "", contact: "", email: "", fb: "https://m.facebook.com/groups/403270590513974?ref=share", price: "" },
+                { id: 12, name: "Gunnoo Mohamed Reza", address: "I & I building royal road the vale", rooms: "6 appartements", contact: "5 25535 49; 5 252 06 69", email: "Gunnoo.vinghpiedbusinesspark@intnet.mu", price: "9 000 for appt with 2 bedroom n 6 000 for appt with 1 bed room" },
+                { id: 13, name: "Gourdeale tk", address: "Ground Floor Residence Gourdeale Tbar Port louis", rooms: "4", contact: "52534669", email: "mgourdeale@gmail.com", price: "Rent:7000; Utilities:1000" },
+                { id: 14, name: "Gourdeale vk", address: "First Floor Residence Gourdeale Tbar Port louis", rooms: "2", contact: "57759501", email: "vgourdeale@airmauritius.com", price: "Rent:7000; Utilities:1000" },
+                { id: 15, name: "Punchoo Geeta", address: "Bramsthan Road, L'Amitié", rooms: "", contact: "4123704, 57822016", email: "karishma.cdn@gmail.com/geetadeveseenauth@gmail.com", price: "" },
+                { id: 16, name: "Mr Nitesh Naojee", address: "Beau Bassin/Floreal", rooms: "", contact: "57234585", email: "vicnaojee@gmail.com", price: "" },
+                { id: 17, name: "Alliance Cap Evolution", address: "", rooms: "", contact: "", email: "alliance@axelis4u.com", price: "" },
+                { id: 18, name: "Agent: Ashley Peerun", address: "", rooms: "", contact: "57859326", email: "peerunashley@gmail.com", price: "" },
+                { id: 19, name: "Dr Yadhav K Luchmun", address: "Petit Raffray", rooms: "", contact: "57632313", email: "yashy.raghoo2@umail.uom.ac.mu", price: "" }
+            ]
+        };
+
+// Fonction pour afficher les logements
+        function displayAccommodations(campus) {
+            const tableBody = document.getElementById('table-body');
+            tableBody.innerHTML = '';
+            
+            accommodations[campus].forEach(item => {
+                const row = document.createElement('tr');
+                const priceRs = extractPrice(item.price);
+                
+                // Conversion des prix
+                const priceMGA = priceRs ? priceRs * CONVERSION_RATES.MGA : null;
+                const priceFMG = priceRs ? priceRs * CONVERSION_RATES.FMG : null;
+                const priceEUR = priceRs ? priceRs * CONVERSION_RATES.EUR : null;
+                
+                // Gestion des contacts
+                let contactContent = item.contact;
+                if (!contactContent && item.fb) {
+                    contactContent = `<a href="${item.fb}" target="_blank">Facebook</a>`;
+                }
+                
+                row.innerHTML = `
+                    <td>${item.id}</td>
+                    <td>${item.name}</td>
+                    <td>${item.address || 'Non spécifié'}</td>
+                    <td>${item.rooms || '--'}</td>
+                    <td>${contactContent || '--'}</td>
+                    <td class="currency mur">${priceRs ? formatNumber(priceRs) + ' Rs' : '--'}</td>
+                    <td class="currency mga">${priceMGA ? formatNumber(priceMGA) + ' MGA' : '--'}</td>
+                    <td class="currency fmg">${priceFMG ? formatNumber(priceFMG) + ' FMG' : '--'}</td>
+                    <td class="currency eur">${priceEUR ? formatNumber(priceEUR) + ' €' : '--'}</td>
+                    <td>${generateMapLink(item.address)}</td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Afficher les logements de Rose Hill par défaut
+            displayAccommodations('rosehill');
+            
+            // Gestion des onglets
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Mettre à jour l'onglet actif
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Afficher les données correspondantes
+                    const campus = this.getAttribute('data-tab');
+                    displayAccommodations(campus);
+                    
+                    // Mettre à jour le filtre de campus
+                    document.getElementById('campus-filter').value = campus;
+                });
+            });
+            
+            // Filtre par campus
+            document.getElementById('campus-filter').addEventListener('change', function() {
+                const campus = this.value;
+                if (campus !== 'all') {
+                    // Activer l'onglet correspondant
+                    document.querySelectorAll('.tab').forEach(tab => {
+                        tab.classList.toggle('active', tab.getAttribute('data-tab') === campus);
+                    });
+                    displayAccommodations(campus);
+                }
+            });
+
+
+
+            // Filtre de recherche
+            document.getElementById('search').addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const rows = document.querySelectorAll('#table-body tr');
+                
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    let found = false;
+                    
+                    cells.forEach(cell => {
+                        if (cell.textContent.toLowerCase().includes(searchTerm)) {
+                            found = true;
+                        }
+                    });
+                    
+                    row.style.display = found ? '' : 'none';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
